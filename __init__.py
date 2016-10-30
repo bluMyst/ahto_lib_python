@@ -58,3 +58,25 @@ def progress_map(f, l):
             f(v)
             progress_mapper(i)
 
+def not_func(f):
+    """ A decorator that not's a function's return value. """
+    def new_f(*args, **kwargs):
+        return not f(*args, **kwargs)
+
+    return new_f
+
+def lazy_property(fn):
+    """A decorator for @properties.
+
+    Only computes the return value once.
+    """
+    attr_name = '_lazy_' + fn.__name__
+
+    @property
+    def _lazy_property(self):
+        if not hasattr(self, attr_name):
+            setattr(self, attr_name, fn(self))
+
+        return getattr(self, attr_name)
+
+    return _lazy_property
