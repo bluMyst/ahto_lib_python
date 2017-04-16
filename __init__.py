@@ -80,3 +80,26 @@ def lazy_property(fn):
         return getattr(self, attr_name)
 
     return _lazy_property
+
+def lazy_function(f):
+    """ A decorator for any function that takes no args. Store the result and
+    only calculate it once.
+    """
+    have_result = False
+    result = None
+
+    def new_f():
+        if not have_result:
+            result = f()
+            have_result = True
+        return result
+
+    return new_f
+
+def static_vars(**kwargs):
+    def decorate(func):
+        for k in kwargs:
+            setattr(func, k, kwargs[k])
+        return func
+    return decorate
+
