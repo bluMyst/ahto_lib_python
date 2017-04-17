@@ -89,6 +89,8 @@ def lazy_function(f):
     result = None
 
     def new_f():
+        nonlocal have_result
+        nonlocal result
         if not have_result:
             result = f()
             have_result = True
