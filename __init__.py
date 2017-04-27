@@ -1,3 +1,5 @@
+import itertools
+
 def yes_no(default, question):
     ''' default can be True, False, or None '''
     if default == None:
@@ -29,7 +31,8 @@ def shorten_string(string, length):
 class ProgressMapper(object):
     """ Use this to print 7/10 style progress indicators.
 
-    Use the 'with' keyword.
+    See the code for progress_map for an example on how to use it. Better yet,
+    just use progress_map and forget about this class altogether!
     """
     def __init__(self, items_len):
         self.items_len = items_len
@@ -66,7 +69,7 @@ def not_func(f):
     return new_f
 
 def lazy_property(fn):
-    """A decorator for @properties.
+    """ A decorator for @properties.
 
     Only computes the return value once.
     """
@@ -111,3 +114,7 @@ def static_vars(**kwargs):
         return func
     return decorate
 
+def any_length_permutation(iterable):
+    """ Get itertools.permutation's for every possible length. """
+    for i in range(1, len(iterable)+1):
+        yield from itertools.permutations(iterable, i)
