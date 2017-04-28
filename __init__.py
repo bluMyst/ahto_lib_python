@@ -31,7 +31,8 @@ class ProgressMapper(object):
 
     Use the 'with' keyword.
     """
-    def __init__(self, items_len):
+    def __init__(self, items_len, message="Loading..."):
+        self.message = message
         self.items_len = items_len
         self.rjust_num = len(str(items_len))
         self(-1)
@@ -41,19 +42,26 @@ class ProgressMapper(object):
         return self
 
     def __exit__(self, exception_type, exception_value, traceback):
-        print()
+        print(f'\r{self.message} done.', end='')
+        print(' ' * (self.rjust_num*2+1))
 
     def __call__(self, item_index):
-        item_num  = str(item_index + 1).rjust(self.rjust_num)
-        print('\r{item_num}/{self.items_len}'.format(**locals()), end=' ')
+        """ Remember that this is the item index, so it starts at 0! """
+        item_num = str(item_index + 1).rjust(self.rjust_num)
+        print(f'\r{self.message} {item_num}/{self.items_len}', end=' ')
 
-def progress_map(f, l):
+def progress_map(f, l, message=None):
     """
     Map a function to a list, and print a 7/10 style progress indicator
     while you're working.
     """
 
-    with ProgressMapper(len(l)) as progress_mapper:
+    if message:
+        pm = ProgressMapper(len(l), message)
+    else:
+        pm = ProgressMapper(len(l))
+
+    with pm as progress_mapper:
         for i, v in enumerate(l):
             f(v)
             progress_mapper(i)
