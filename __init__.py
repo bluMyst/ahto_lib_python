@@ -28,6 +28,26 @@ def shorten_string(string, length):
 
     return string[:length-3] + '...'
 
+class LoadingDone(object):
+    """
+    >>> import time
+    >>> with ahto_lib.LoadingDone():
+            time.sleep(2)
+    Loading... done.
+    >>> with ahto_lib.LoadingDone("Testing..."):
+    ...     time.sleep(2)
+    Testing... done.
+    """
+    def __init__(self, message="Loading..."):
+        self.message = message
+
+    def __enter__(self):
+        print(self.message, end=' ')
+        return self
+
+    def __exit__(self):
+        print("done.")
+
 class ProgressMapper(object):
     """ Use this to print 7/10 style progress indicators.
 
