@@ -1,4 +1,5 @@
 import itertools
+import sys
 
 def yes_no(default, question):
     ''' default can be True, False, or None '''
@@ -32,10 +33,12 @@ class LoadingDone(object):
     """
     >>> import time
     >>> with ahto_lib.LoadingDone():
-            time.sleep(2)
+    ...     time.sleep(2)
+    ... 
     Loading... done.
     >>> with ahto_lib.LoadingDone("Testing..."):
     ...     time.sleep(2)
+    ... 
     Testing... done.
     """
     def __init__(self, message="Loading..."):
@@ -43,9 +46,10 @@ class LoadingDone(object):
 
     def __enter__(self):
         print(self.message, end=' ')
+        sys.stdout.flush()
         return self
 
-    def __exit__(self):
+    def __exit__(self, exception_type, exception_value, traceback):
         print("done.")
 
 class ProgressMapper(object):
@@ -72,6 +76,7 @@ class ProgressMapper(object):
         """ Remember that this is the item index, so it starts at 0! """
         item_num = str(item_index + 1).rjust(self.rjust_num)
         print(f'\r{self.message} {item_num}/{self.items_len}', end=' ')
+        sys.stdout.flush()
 
 def progress_map(f, l, message=None):
     """
