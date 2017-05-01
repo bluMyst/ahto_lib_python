@@ -62,9 +62,10 @@ class ProgressMapper(object):
         self.message = message
         self.items_len = items_len
         self.rjust_num = len(str(items_len))
-        self(-1)
 
     def __enter__(self):
+        # We're calling with -1 because it will make __call__ display 0/100,
+        # since it returns 1-based output for user friendliness.
         self(-1)
         return self
 
