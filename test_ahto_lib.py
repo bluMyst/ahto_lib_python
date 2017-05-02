@@ -43,9 +43,9 @@ def test_loading_done(capfd):
 
 @pytest.mark.parametrize("len_,message,indicies", [
     (600,  "Testing...", [2, 13, 45, 200, 400]),
-    (1,    None,         [0, 1]),
-    (99,   "Fooing...",  [0, 13, 67, 99]),
-    (9999, None,         [0, 10, 200, 300, 400, 1000, 9999])])
+    (2,    None,         [0, 1]),
+    (99,   "Fooing...",  [0, 13, 67, 98]),
+    (9999, None,         [0, 10, 200, 300, 400, 1000, 9998])])
 def test_progress_mapper(capfd, len_, indicies, message):
     if message is not None:
         pm = ahto_lib.ProgressMapper(len_, message).__enter__()
@@ -61,15 +61,15 @@ def test_progress_mapper(capfd, len_, indicies, message):
         pm(i)
         out, err = capfd.readouterr()
         assert out.startswith('\r' + message)
-        # Need a string function for .count
-        #assert out.count(str(len_)) == 1 and out.count(str(i))
+        assert out.find(f"{i+1}/{len_}") != -1
 
         if last_len is not None:
-            assert len(out) == last_len
-        else:
+            assert len(out) >= last_len
+
+        if last_len is None or len(out) > last_len:
             last_len = len(out)
 
-    pm.__exit__()
+    pm.__exit__(None, None, None)
     out, err = capfd.readouterr()
     assert out.startswith('\r' + message + " done.")
-    assert len(out) == last_len
+    assert len(out) >= last_len
