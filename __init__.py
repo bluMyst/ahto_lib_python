@@ -84,6 +84,7 @@ def progress_map(f, l, message=None):
     Map a function to a list, and print a 7/10 style progress indicator
     while you're working.
     """
+    # TODO: This should really return a list of values.
 
     if message:
         pm = ProgressMapper(len(l), message)
