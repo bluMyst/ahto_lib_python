@@ -74,26 +74,40 @@ def test_progress_mapper(capfd, len_, indicies, message):
     assert out.startswith('\r' + message + " done.")
     assert len(out) >= last_len
 
-# TODO: Fix!
-#def test_progress_map(capfd):
-#    class ProgressMapTester(object):
-#        def __init__(self, args_expected):
-#            self.args_expected = args_expected
-#            self.total_args = len(self.args_expected)
-#
-#        def __call__(self, arg):
-#            nonlocal capfd
-#            assert arg == self.args_expected[0]
-#            del self.args_expected[0]
-#            out, err = capfd.readouterr()
-#            assert out.startswith("\rLoading... ")
-#            position_in_args = len(self.args_expected) - self.total_args
-#            assert out.find(f"{position_in_args+1}/{self.total_args}") != -1
-#
-#    l = list(range(0, 101, 10))
-#    ahto_lib.progress_map(ProgressMapTester(l), l)
-#    out, err = capfd.readouterr()
-#    assert out.startswith("\rLoading... done.")
+def test_progress_map(monkeypatch):
+    l = list(range(10))
+
+    class DummyProgressMapper(object):
+        def __init__(self, items_len, message=None):
+            nonlocal l
+            assert items_len == len(l)
+            assert message == "Foo bar..."
+
+            self.current_state = "init done"
+
+        def __enter__(self):
+            assert self.current_state == "init done"
+            self.current_state = "enter done"
+            return self
+
+        def __call__(self, item_index):
+            if item_index == 0:
+                assert self.current_state == "enter done"
+            else:
+                assert self.current_state == ("iteration index", item_index-1)
+                nonlocal l
+                assert len(l) >= item_index
+
+            self.current_state = ("iteration index", item_index)
+
+        def __exit__(self, *_, **__):
+            nonlocal l
+            assert self.current_state == ("iteration index", len(l)-1)
+
+    monkeypatch.setattr(ahto_lib, 'ProgressMapper', DummyProgressMapper)
+
+    l = ahto_lib.progress_map(lambda i: i*2, l, "Foo bar...")
+    assert l == range(0, 20, 2)
 
 def test_not_func():
     def ret_and_args(*args):
@@ -148,5 +162,11 @@ def test_static_vars():
     for i in range(1, 20):
         assert accumulator() == i
 
-# TODO: any_length_permutation
-# This one's incredibly tricky because order matters with permutations!
+def test_any_length_permutation():
+    import itertools
+    l = list(range(3))
+    perms = ahto_lib.any_length_permutation(l)
+
+    assert all(i in perms for i in itertools.permutations(l, 1))
+    assert all(i in perms for i in itertools.permutations(l, 2))
+    assert all(i in perms for i in itertools.permutations(l, 3))
