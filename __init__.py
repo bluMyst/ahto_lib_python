@@ -53,10 +53,9 @@ class LoadingDone(object):
         print("done.")
 
 class ProgressMapper(object):
-    """ Use this to print 7/10 style progress indicators.
+    """ Use this to print "Loading... 7/10" style progress indicators.
 
-    See the code for progress_map for an example on how to use it. Better yet,
-    just use progress_map and forget about this class altogether!
+    See the code for progress_map for an example on how to use it.
     """
     def __init__(self, items_len, message="Loading..."):
         self.message = message
@@ -81,20 +80,22 @@ class ProgressMapper(object):
 
 def progress_map(f, l, message=None):
     """
-    Map a function to a list, and print a 7/10 style progress indicator
-    while you're working.
+    Map a function to a list, and print a "Loading... 7/10" style progress
+    indicator while you're working.
     """
-    # TODO: This should really return a list of values.
 
-    if message:
+    if message is not None:
         pm = ProgressMapper(len(l), message)
     else:
         pm = ProgressMapper(len(l))
 
+    l = l[:]
     with pm as progress_mapper:
         for i, v in enumerate(l):
-            f(v)
             progress_mapper(i)
+            l[i] = f(v)
+
+    return l
 
 def not_func(f):
     """ A decorator that not's a function's return value. """
