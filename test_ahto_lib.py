@@ -107,7 +107,7 @@ def test_progress_map(monkeypatch):
     monkeypatch.setattr(ahto_lib, 'ProgressMapper', DummyProgressMapper)
 
     l = ahto_lib.progress_map(lambda i: i*2, l, "Foo bar...")
-    assert l == range(0, 20, 2)
+    assert l == list(range(0, 20, 2))
 
 def test_not_func():
     def ret_and_args(*args):
