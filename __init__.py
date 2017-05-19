@@ -1,9 +1,12 @@
+""" A library of helpful little widgets that I like to keep around.. """
+
 import itertools
 import sys
 
+
 def yes_no(default, question):
     ''' default can be True, False, or None '''
-    if default == None:
+    if default is None:
         yn_prompt = ' [yn]'
     elif default:
         yn_prompt = ' [Yn]'
@@ -16,11 +19,12 @@ def yes_no(default, question):
         return True
     elif answer == 'n':
         return False
-    elif default != None:
+    elif default is not None:
         return default
     else:
         print("Invalid response: " + answer)
         return yes_no(default, question)
+
 
 def shorten_string(string, length):
     ''' shortens a string and uses "..." to show it's been shortened '''
@@ -28,6 +32,7 @@ def shorten_string(string, length):
         return string
 
     return string[:length-3] + '...'
+
 
 class LoadingDone(object):
     """
@@ -51,6 +56,7 @@ class LoadingDone(object):
 
     def __exit__(self, exception_type, exception_value, traceback):
         print("done.")
+
 
 class ProgressMapper(object):
     """ Use this to print "Loading... 7/10" style progress indicators.
@@ -78,6 +84,7 @@ class ProgressMapper(object):
         print(f'\r{self.message} {item_num}/{self.items_len}', end=' ')
         sys.stdout.flush()
 
+
 def progress_map(f, l, message=None):
     """
     Map a function to a list, and print a "Loading... 7/10" style progress
@@ -97,12 +104,14 @@ def progress_map(f, l, message=None):
 
     return l
 
+
 def not_func(f):
     """ A decorator that not's a function's return value. """
     def new_f(*args, **kwargs):
         return not f(*args, **kwargs)
 
     return new_f
+
 
 def lazy_property(fn):
     """ A decorator for @properties.
@@ -119,6 +128,7 @@ def lazy_property(fn):
         return getattr(self, attr_name)
 
     return _lazy_property
+
 
 def lazy_function(f):
     """ A decorator for any function that takes no args. Store the result and
@@ -137,6 +147,7 @@ def lazy_function(f):
 
     return new_f
 
+
 def static_vars(**kwargs):
     """ Example:
         @static_vars(counter=0)
@@ -149,6 +160,7 @@ def static_vars(**kwargs):
             setattr(func, k, kwargs[k])
         return func
     return decorate
+
 
 def any_length_permutation(iterable):
     """ Get itertools.permutation's for every possible length. """

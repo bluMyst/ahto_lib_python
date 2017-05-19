@@ -2,6 +2,7 @@ import pytest
 
 import ahto_lib
 
+
 @pytest.mark.parametrize("default,question,response,return_", [
     (True,  "Foo",  "",  True),
     (False, "Bar",  "",  False),
@@ -26,6 +27,7 @@ def test_yes_no(monkeypatch, default, question, response, return_):
     monkeypatch.setitem(ahto_lib.__builtins__, 'input', new_input)
     assert ahto_lib.yes_no(default, question) == return_
 
+
 def test_loading_done(capfd):
     ld = ahto_lib.LoadingDone().__enter__()
     out, err = capfd.readouterr()
@@ -40,6 +42,7 @@ def test_loading_done(capfd):
     ld.__exit__(None, None, None)
     out, err = capfd.readouterr()
     assert out == "done.\n"
+
 
 @pytest.mark.parametrize("len_,message,indicies", [
     (600,  "Testing...", [2, 13, 45, 200, 400]),
@@ -73,6 +76,7 @@ def test_progress_mapper(capfd, len_, indicies, message):
     out, err = capfd.readouterr()
     assert out.startswith('\r' + message + " done.")
     assert len(out) >= last_len
+
 
 def test_progress_map(monkeypatch):
     l = list(range(10))
@@ -109,6 +113,7 @@ def test_progress_map(monkeypatch):
     l = ahto_lib.progress_map(lambda i: i*2, l, "Foo bar...")
     assert l == list(range(0, 20, 2))
 
+
 def test_not_func():
     def ret_and_args(*args):
         return all(args)
@@ -118,13 +123,14 @@ def test_not_func():
     ret_not_arg  = ahto_lib.not_func(lambda arg: arg)
     ret_and_args = ahto_lib.not_func(ret_and_args)
 
-    assert ret_true() == True
-    assert ret_false() == False
-    assert ret_not_arg(True) == False
-    assert ret_not_arg(False) == True
-    assert ret_and_args(True) == False
-    assert ret_and_args(True, True, True, True, True) == False
-    assert ret_and_args(True, True, False, True, True) == True
+    assert ret_true() is True
+    assert ret_false() is False
+    assert ret_not_arg(True) is False
+    assert ret_not_arg(False) is True
+    assert ret_and_args(True) is False
+    assert ret_and_args(True, True, True, True, True) is False
+    assert ret_and_args(True, True, False, True, True) is True
+
 
 def test_lazy_property():
     class LazyPropertyTester(object):
@@ -140,6 +146,7 @@ def test_lazy_property():
     for _ in range(10):
         assert LazyPropertyTester().foo == 1337
 
+
 def test_lazy_function():
     times_called = 0
 
@@ -153,6 +160,7 @@ def test_lazy_function():
     for _ in range(10):
         assert f() is True
 
+
 def test_static_vars():
     @ahto_lib.static_vars(counter=0)
     def accumulator():
@@ -161,6 +169,7 @@ def test_static_vars():
 
     for i in range(1, 20):
         assert accumulator() == i
+
 
 def test_any_length_permutation():
     import itertools
