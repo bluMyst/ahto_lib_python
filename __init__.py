@@ -2,6 +2,7 @@
 
 import itertools
 import sys
+import textwrap
 
 
 def yes_no(default, question):
@@ -166,3 +167,21 @@ def any_length_permutation(iterable):
     """ Get itertools.permutation's for every possible length. """
     for i in range(1, len(iterable)+1):
         yield from itertools.permutations(iterable, i)
+
+
+def better_dedent(s, smart_dedent=True, strip_nl=True, max_nl=2):
+    """
+    strip_nl: Strip trailing and leading newlines.
+
+    smart_dedent: If true, use textwrap.dedent. If false, just remove all
+                  leading spaces on each line.
+    """
+    if strip_nl:
+        s = s.strip('\n')
+
+    if smart_dedent:
+        s = textwrap.dedent(s)
+    else:
+        s = '\n'.join('\n'.split(s).lstrip())
+
+    return s
