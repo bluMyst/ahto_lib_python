@@ -179,3 +179,37 @@ def test_any_length_permutation():
     assert all(i in perms for i in itertools.permutations(l, 1))
     assert all(i in perms for i in itertools.permutations(l, 2))
     assert all(i in perms for i in itertools.permutations(l, 3))
+
+
+def test_better_dedent():
+    test_string = '\n\n  foo\n  \n\t\n\n\t\n    bar\n'
+
+    s = ahto_lib.better_dedent(test_string)
+    assert s == 'foo\n\n  bar'
+
+    s = ahto_lib.better_dedent(test_string, max_nl=3)
+    assert s == 'foo\n\n\n  bar'
+
+    s = ahto_lib.better_dedent(test_string, max_nl=1)
+    assert s == 'foo\n  bar'
+
+    s = ahto_lib.better_dedent(test_string, smart_dedent=False)
+    assert s == 'foo\n\nbar'
+
+    s = ahto_lib.better_dedent(test_string, smart_dedent=False, max_nl=3)
+    assert s == 'foo\n\n\nbar'
+
+    s = ahto_lib.better_dedent(test_string, smart_dedent=False, max_nl=1)
+    assert s == 'foo\nbar'
+
+    s = ahto_lib.better_dedent(test_string, strip_nl=False)
+    assert s == '\n\nfoo\n\n  bar\n'
+
+    s = ahto_lib.better_dedent(test_string, smart_dedent=False, strip_nl=False)
+    assert s == '\n\nfoo\n\nbar\n'
+
+    s = ahto_lib.better_dedent(test_string, strip_nl=False, max_nl=1)
+    assert s == '\nfoo\n  bar\n'
+
+    s = ahto_lib.better_dedent('foo' + '\n'*10 + 'bar', max_nl=None)
+    assert s == 'foo' + '\n'*10 + 'bar'

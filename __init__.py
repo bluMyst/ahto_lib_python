@@ -3,6 +3,7 @@
 import itertools
 import sys
 import textwrap
+import re
 
 
 def yes_no(default, question):
@@ -175,6 +176,8 @@ def better_dedent(s, smart_dedent=True, strip_nl=True, max_nl=2):
 
     smart_dedent: If true, use textwrap.dedent. If false, just remove all
                   leading spaces on each line.
+
+    max_nl: Maximum number of consecutive newlines. Set to None for no maximum.
     """
     if strip_nl:
         s = s.strip('\n')
@@ -182,6 +185,13 @@ def better_dedent(s, smart_dedent=True, strip_nl=True, max_nl=2):
     if smart_dedent:
         s = textwrap.dedent(s)
     else:
-        s = '\n'.join('\n'.split(s).lstrip())
+        s = '\n'.join(i.lstrip() for i in s.split('\n'))
+
+    if max_nl is not None:
+        s = re.sub(
+            # I.E.: \n{3,}
+            r'\n{' + str(max_nl+1) + ',}',
+            '\n'*max_nl,
+            s)
 
     return s
